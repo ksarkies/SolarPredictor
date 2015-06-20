@@ -9,7 +9,6 @@
 *.stylecheck
 *.swp
 *.csv
-*.ods
 \#*
 .\#*
 *~

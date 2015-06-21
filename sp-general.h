@@ -26,20 +26,8 @@
 #define SOLARPOWER_H_
 
 //----------------------------------------------------------------------------
-// Length of day in hours for given latitude and solar declination
-//
 double dayLength(const double latitude, const double declination);
-//----------------------------------------------------------------------------
-// Declination of the Sun for a given day of Year
-// Input: Day of year counting from 0 at January 1
-// Output: Declination in degrees
-//
 double sunDeclination(const double dayYear);
-//----------------------------------------------------------------------------
-// Standard incident solar power W/m^2 used to specify solar modules. This
-// represents the nominal power incident on the Earth's surface after traversing
-// the atmosphere when the Sun is vertically overhead.
-
 double getSolarStandard();
 
 #endif /*SOLARPOWER_H_*/

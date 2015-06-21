@@ -24,11 +24,12 @@
 #include <cmath>
 
 /*----------------------------------------------------------------------------*/
-/* Length of day in hours for given latitude and solar declination
+/** @brief Length of day in hours for given latitude and solar declination
+
 There is 15 degrees per hour movement of the sun.
-Input: Latitude in degrees, positive north of equator
-       Declination of the sun in degrees
-Output: length of day sunrise to sunset in hours. */
+@param[in]: Latitude in degrees, positive north of equator
+            Declination of the sun in degrees
+@results:   length of day sunrise to sunset in hours. */
 
 double dayLength(const double latitude, const double declination)
 {
@@ -38,9 +39,11 @@ double dayLength(const double latitude, const double declination)
     return 2*acos(-tan(rLatitude)*tan(rDeclination))/(15*angleConversion);
 }
 /*----------------------------------------------------------------------------*/
-/* Declination of the Sun for a given day of Year
-Input: Day of year counting from 0 at January 1
-Output: Declination in degrees
+/** @brief Declination of the Sun for a given day of Year
+
+@param[in]: Day of year counting from 0 at January 1
+@results:   Declination in degrees
+
 This heuristic is taken from Wikipedia referencing
 Spencer, J.W. 1971: Fourier series representation of the position of the Sun.
   Search, 2(5), 172 */

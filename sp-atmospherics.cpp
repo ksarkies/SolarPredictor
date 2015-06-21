@@ -26,13 +26,13 @@ Routines for computing air density and atmospheric path loss.
 #include <cmath>
 
 /*----------------------------------------------------------------------------*/
-/* Compute the density of air from a suitable model
+/** @brief Compute the density of air from a suitable model
 
 Glenn Research Centre http://www.grc.nasa.gov/WWW/K-12/airplane/atmos.html
 The units of the model are given in imperial, so we convert to metric last
 
-Input:  height in metres
-Output: air density in kg/m^3
+@param[in]: height in metres
+@returns: air density in kg/m^3
 */
 double airDensity(const double height)
 {
@@ -56,7 +56,7 @@ double airDensity(const double height)
     return pressure*0.0341636/Ta;           // density in kg/m^3
 }
 /*----------------------------------------------------------------------------*/
-/* Numerical integration of air density over a sloping solar ray path.
+/** @brief Numerical integration of air density over a sloping solar ray path.
 
 The angle of the path to the vertical is phi. To integrate density rho(h)
 as a function of height, over the path length a, we compute the slope of the
@@ -64,8 +64,8 @@ path with respect to the height from ground level to get:
 
      integral from 0 to infinity rho(h) (da/dh) dh
 
-Input:  cosine of angle of path to vertical phi in degrees
-Output: Path loss. Units are arbitrary as this appears only in ratios.
+@param[in]: cosine of angle of path to vertical phi in degrees
+@returns: Path loss. Units are arbitrary as this appears only in ratios.
 */
 double pathLoss(const double cosPhi)
 {
@@ -95,16 +95,22 @@ speed up things. */
     return loss;
 }
 /*----------------------------------------------------------------------------*/
-/* Return the amount of solar power W/m^2 incident on the Earth's upper
-atmosphere. */
+/** @brief Return the amount of solar power W/m^2 incident on the Earth's upper
+atmosphere.
+
+@returns: solar constant W/m^2
+*/
 
 double getSolarConstant()
 {
     return 1366;
 }
 /*----------------------------------------------------------------------------*/
-/* A constant used to determine the rate of loss of solar power through the
-atmosphere. */
+/** @brief A constant used to determine the rate of loss of solar power through
+the atmosphere.
+
+@returns: loss constant
+*/
 
 double getLossConstant()
 {

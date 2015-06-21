@@ -27,36 +27,9 @@
 #define SPATMOSPHERICS_H_
 
 //---------------------------------------------------------------------------
-// Compute the density of air from a suitable model
-//
-// Input: height above sea level in metres
-// Output: Modelled air density in kg/metre^3
-
 double airDensity(const double height);
-//----------------------------------------------------------------------------
-// Numerical integration of density over a sloping path.
-//
-// The angle of the path to the vertical is phi. To integrate density rho(h)
-// as a function of height, over the path, we compute the slope of the
-// path with respect to the height from ground level to get:
-//
-//      integral from 0 to infinity rho(h) (da/dh) dh
-//
-// Input: angle of path to vertical phi in degrees
-// Output: path loss integral
-
 double pathLoss(const double phi);
-//----------------------------------------------------------------------------
-// Global constants
-//----------------------------------------------------------------------------
-// Return the amount of solar power W/m^2 incident on the Earth's upper
-// atmosphere.
-
 double getSolarConstant();
-//----------------------------------------------------------------------------
-// A constant used to determine the rate of loss of solar power through the
-// atmosphere.
-
 double getLossConstant();
 
 #endif /*SPATMOSPHERICS_H_*/

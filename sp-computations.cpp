@@ -32,9 +32,9 @@ A variety of routines producing high level results.
 #include <iostream>                                 // Base stream classes
 
 /*----------------------------------------------------------------------------*/
-/* Computation of annual return for a fixed module system costg an MPP
-tracking regulator, with offset and feed-in tariffs provided for usage offset
-and excess.
+/** @brief Annual return for a fixed module system, MPP tracking regulator,
+
+Offset and feed-in tariffs provided for usage offset and excess.
 
 The model includes average cloud cover estimates from the BOM. These are
 quite rough measures for this purpose and produce much lower returns than
@@ -42,16 +42,19 @@ a more suitable model would give.
 
 This is a simple sum of daily returns over a year.
 
-Input: Latitude in degrees, positive north of equator
-       Angle of the module to the vertical
-       Angle offset of module from North towards East
-       cost is the tariff ($/kwH) paid by the user for power taken from the grid
-       feedIn is the tariff ($/kwH) paid to the user for power returned to the grid
-       usage is the average power in kW taken by the user during the day
-         (note that this is a fixed amount for daylight hours only, and
-          excludes additional power used at night which is not offset by
-          solar generated power).
-Output: Monetary return */
+@param[in]: Latitude in degrees, positive north of equator
+@param[in]: Angle of the module to the vertical
+@param[in]: Angle offset of module from North towards East
+@param[in]: cost is the tariff ($/kwH) paid by the user for power taken from the
+            grid
+@param[in]: feedIn is the tariff ($/kwH) paid to the user for power returned to
+            the grid
+@param[in]: usage is the average power in kW taken by the user during the day
+            (note that this is a fixed amount for daylight hours only, and
+            excludes additional power used at night which is not offset by
+            solar generated power).
+@results:   Monetary return
+*/
 
 double computeAnnualReturnFixedMPP(const double latitude,
                              const double moduleAngle,
@@ -74,22 +77,27 @@ double computeAnnualReturnFixedMPP(const double latitude,
     }
     return totalIncome;
 }
-/*----------------------------------------------------------------------------
-Computation of daily financial return.
+/*----------------------------------------------------------------------------*/
+/** @brief Computation of daily financial return.
+
 The regulator will use Maximum power Point (MPP) tracking for efficiency.
 The module is fixed at a preset angle to the sun.
 Integration is done by a simple sum over small elements.
-Input: Latitude in degrees, positive north of equator
-       Declination of the sun in degrees
-       Angle of the module to the vertical
-       Angle offset of module from North towards East
-       cost is the tariff ($/kwH) paid by the user for power taken from the grid
-       feedIn is the tariff ($/kwH) paid to the user for power returned to the grid
-       usage is the average power in kW taken by the user during the day
-         (note that this is a fixed amount for daylight hours only, and
-          excludes additional power used at night which is not offset by
-          solar generated power).
-Output: Monetary return in $
+
+@param[in]: Latitude in degrees, positive north of equator
+@param[in]: Declination of the sun in degrees
+@param[in]: Angle of the module to the vertical
+@param[in]: Angle offset of module from North towards East
+@param[in]: cost is the tariff ($/kwH) paid by the user for power taken from the
+            grid
+@param[in]: feedIn is the tariff ($/kwH) paid to the user for power returned to
+            the grid
+@param[in]: usage is the average power in kW taken by the user during the day
+            (note that this is a fixed amount for daylight hours only, and
+            excludes additional power used at night which is not offset by
+            solar generated power).
+@results:   Monetary return in $
+
 Dependencies: pathLoss(cosangle) integral of air density over a slant path */
 
 double computeDailyFixedMPPReturn(const double latitude,
@@ -167,8 +175,9 @@ Needed to determine proportion of solar energy incident on the module. */
     }
     return financialReturn;
 }
-/*----------------------------------------------------------------------------
-Computation of daily charge for a module that follows the motion of the sun.
+/*----------------------------------------------------------------------------*/
+/** @brief Computation of daily charge for a module that following sun's motion.
+
 Varieties of models:
 1. module delivering full power to the battery.
 2. module output voltage held to battery voltage.
@@ -177,10 +186,12 @@ Represents a module always facing the sun in both elevation and azimuth.
 Integration is done by a simple sum over small elements given in minute
 increments and over half a day. The result is converted to WH by dividing
 by 60 and multiplying by 2 for the second half of the day.
-Input: Latitude in degrees, positive north of equator
-       Declination of the sun in degrees
-       Model number
-Output: Total charge in AH delivered to the battery over the day.
+
+@param[in]: Latitude in degrees, positive north of equator
+@param[in]: Declination of the sun in degrees
+@param[in]: Model number
+@results:   Total charge in AH delivered to the battery over the day.
+
 Dependencies: pathLoss(cosangle) integral of air density over a slant path */
 
 double solarFollowingCharge(const double latitude,
@@ -239,17 +250,20 @@ relative to a longitudinal axis at noon. */
     }
     return solarEnergyFollowingCharge/30;
 }
-/*----------------------------------------------------------------------------
-Computation of daily charge for a fixed module.
+/*----------------------------------------------------------------------------*/
+/** @brief Computation of daily charge for a fixed module.
+
 Simplistic model with module giving full power.
 Integration is done by a simple sum over small elements.
 Represents a fixed module facing the sun at noon.
-Input: Latitude in degrees, positive north of equator
-       Declination of the sun in degrees
-       Angle of the module to the vertical
-       Offset of the module in degrees from the North to the East
-       Model number
-Output: Total charge in AH delivered to the battery over the day.
+
+@param[in]: double Latitude in degrees, positive north of equator
+@param[in]: Declination of the sun in degrees
+@param[in]: Angle of the module to the vertical
+@param[in]: Offset of the module in degrees from the North to the East
+@param[in]: Model number
+@results:   Total charge in AH delivered to the battery over the day.
+
 Dependencies: pathLoss(cosangle) integral of air density over a slant path */
 
 double solarFixedCharge(const double latitude,
@@ -335,7 +349,9 @@ Needed to determine proportion of solar energy incident on the module. */
     }
     return solarEnergyFixedCharge/60;
 }
-/*----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
+/** @brief Integration of solar energy for following module.
+
 Integration of the solar energy (W/m^2) to give total generated energy (kWH/m^2)
 over a day at a given latitude for a module that follows the motion of the sun.
 
@@ -343,9 +359,12 @@ Integration is done by a simple sum over small elements given in minute
 increments and over half a day. The result is converted to kWH by dividing
 by 60,000 and multiplying by 2 for the second half of the day.
 Represents a module always facing the sun in both elevation and azimuth.
-Input: Latitude in degrees, positive north of equator
-       Declination of the sun in degrees
-Output: Total energy per square metre over a day arriving at the module surface
+
+@param[in]: Latitude in degrees, positive north of equator
+@param[in]: Declination of the sun in degrees
+@results:   Total energy per square metre over a day arriving at the module
+            surface
+
 Dependencies: pathLoss(cosangle) integral of air density over a slant path */
 
 double dailySolarEnergyFollowing(const double latitude,
@@ -374,7 +393,9 @@ double dailySolarEnergyFollowing(const double latitude,
     }
     return solarEnergy/30000;
 }
-/*----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
+/** @brief Integration of solar energy for fixed module.
+
 Integration of the solar energy (W/m^2) to give total generated energy (kWH/m^2)
 for a day at given latitude and fixed panels.
 
@@ -382,11 +403,11 @@ Integration is done by a simple sum over small elements given in minute
 increments and over half a day. The result is converted to kWH by dividing
 by 60,000 and multiplying by 2 for the second half of the day.
 Represents a fixed module facing the sun at noon.
-Input: Latitude in degrees, positive north of equator
+@param[in]:Latitude in degrees, positive north of equator
        Declination of the sun in degrees
        Angle of the module to the equatorial plane
        Offset of the module  in degrees from the North to the East
-Output: Total energy per square metre over a day arriving at earth's surface.
+@results:Total energy per square metre over a day arriving at earth's surface.
 Dependencies: pathLoss(cosangle) integral of air density over a slant path. */
 
 double dailySolarEnergyFixed(const double latitude,

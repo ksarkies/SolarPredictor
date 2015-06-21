@@ -24,30 +24,41 @@
 #ifndef SPMODULEMODEL_H_
 #define SPMODULEMODEL_H_
 
-//----------------------------------------------------------------------------
-// Model for solar module BP3125
-// This model, fitted to parameters from the datasheet, provides a current
-// output for a give module voltage (usually constrained by the battery voltage
-// and the solarEnergy impinging on it. The parameters are relevant to a
-// reference solar energy of 100 units to 1000W/m^2
+/*  BP3125 polycrystalline 120W
+    double Isc = 8.02;              // Short Circuit Current (A)
+    double I0 = 0.000185;           // Diode dark current (A)
+    double Vk = 2.071;              // Model parameter voltage (V)
+    int Ns = 36;                    // Number of cells in series
+*/
+/* Kaneka GEB 60W set of 24 (1.4KW system)
+    int NM = 24;                    // Number of Modules
+    double Isc = 1.19*NM;           // Short Circuit Current (A)
+    double I0 = 0.00643*NM;         // Diode dark current (A)
+    double Vk = 17.6;               // Model parameter voltage (V)
+    double eff = 0.93;              // Fractional efficiency of regulator
+*/
+struct moduleModelParameters
+{
+    int NM;                         // Number of Modules in parallel
+    double Isc;                     // Short Circuit Current (A)
+    double I0;                      // Diode dark current (A)
+    double Vk;                      // Model parameter voltage (V)
+    double eff;                     // Fractional efficiency of regulator
+    double Rs;                      // Diode series resistance (ohm)
+    double Ns;                      // Number of cells in series
+};
 
+/*----------------------------------------------------------------------------*/
 double moduleCurrent(const double solarEnergy, const double voltage);
-//----------------------------------------------------------------------------
-// Model for solar module BP3125 with a maximum power point tracker.
-//
-// solarEnergy is the percentage standard incident solar radiation used to
-// define the module characteristics (ie 1000 W/m2).
-//
-// This uses a simple hill-climbing search for maximum power starting at the
-// open-circuit voltage and stepping back to the peak.
-
 double OptimalModulePower(const double solarEnergy);
-
-//----------------------------------------------------------------------------
-// Standard incident solar power W/m^2 used to specify solar modules. This
-// represents the nominal power incident on the Earth's surface after traversing
-// the atmosphere when the Sun is vertically overhead.
-
+void setModelParameters(const int NM,const double Isc,const double I0,
+                        const double Vk,const double eff, const double Rs,
+                        const int Ns);
+void deriveSimpleModel(const int NM, const double Isc, const double Voc,
+                       const double Vm, const double Im, const double eff,
+                       const int Ns);
 double getSolarStandard();
+double getVk();
+double getI0();
 
 #endif /*SPMODULEMODEL_H_*/

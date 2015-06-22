@@ -29,7 +29,7 @@ A variety of routines producing high level results.
 #include "sp-atmospherics.h"
 #include "sp-general.h"
 #include <cmath>
-#include <iostream>                                 // Base stream classes
+#include <QDebug>
 
 /*----------------------------------------------------------------------------*/
 /** @brief Annual return for a fixed module system, MPP tracking regulator,
@@ -40,7 +40,7 @@ The model includes average cloud cover estimates from the BOM. These are
 quite rough measures for this purpose and produce much lower returns than
 a more suitable model would give.
 
-This is a simple sum of daily returns over a year.
+This provides for computations of accumulated income over a block of days.
 
 @param[in]: Latitude in degrees, positive north of equator
 @param[in]: Angle of the module to the vertical
@@ -53,36 +53,38 @@ This is a simple sum of daily returns over a year.
             (note that this is a fixed amount for daylight hours only, and
             excludes additional power used at night which is not offset by
             solar generated power).
-@results:   Monetary return
+@param[in]: dayYear is the numerical integer day of the year, 0 being Jan 1.
+@results:   Monetary return for the day in $.
 */
 
-double computeAnnualReturnFixedMPP(const double latitude,
+double computeAnnualFixedMPPReturn(const double latitude,
                              const double moduleAngle,
                              const double moduleOffset,
                              const double cost,
                              const double feedIn,
-                             const double usage)
+                             const double usage,
+                             const int dayYear)
 {
-    double totalIncome = 0;
-    for (int dayYear = 0; dayYear < 365; dayYear++)
-    {
-        double declination = sunDeclination(dayYear);
-        double dayIncome = //oktaFactor[month]*
-                           computeDailyFixedMPPReturn(latitude,
-                               declination,
-                               moduleAngle, moduleOffset,
-                               cost,feedIn,usage);
-//       std::cout << " Day " << dayYear << " Income " << dayIncome << std::endl;
-        totalIncome += dayIncome;
-    }
-    return totalIncome;
+    double declination = sunDeclination(dayYear);
+    double dayIncome = //oktaFactor[month]*
+                       computeDailyFixedMPPReturn(latitude,
+                           declination,
+                           moduleAngle, moduleOffset,
+                           cost,feedIn,usage);
+    return dayIncome;
 }
+
 /*----------------------------------------------------------------------------*/
-/** @brief Computation of daily financial return.
+/** @brief Daily return for a fixed module system, MPP tracking regulator,
 
 The regulator will use Maximum power Point (MPP) tracking for efficiency.
 The module is fixed at a preset angle to the sun.
-Integration is done by a simple sum over small elements.
+Incident radiation is integrated over time by a simple sum over small elements
+taking into account the angle of the suns rays to the module and atmospheric
+absorption.
+
+Financial return is the payment for excess power, if any, plus the savings on
+cost of power taken from the system rather than the grid.
 
 @param[in]: Latitude in degrees, positive north of equator
 @param[in]: Declination of the sun in degrees
@@ -96,17 +98,17 @@ Integration is done by a simple sum over small elements.
             (note that this is a fixed amount for daylight hours only, and
             excludes additional power used at night which is not offset by
             solar generated power).
-@results:   Monetary return in $
+@results:   Monetary return for the day in $.
 
 Dependencies: pathLoss(cosangle) integral of air density over a slant path */
 
 double computeDailyFixedMPPReturn(const double latitude,
-                            const double declination,
-                            const double moduleAngle,
-                            const double moduleOffset,
-                             const double cost,
-                             const double feedIn,
-                             const double usage)
+                                const double declination,
+                                const double moduleAngle,
+                                const double moduleOffset,
+                                const double cost,
+                                const double feedIn,
+                                const double usage)
 {
     const double angleConversion = 3.1415927/180.0;
     const double rDeclination = declination*angleConversion;
@@ -122,9 +124,9 @@ double computeDailyFixedMPPReturn(const double latitude,
     const double lossConstant = getLossConstant();
     const double solarStandard = getSolarStandard();
     
-    int minuteIncr = 1;                // time integration step size
+    int minuteIncr = 1;                     // time integration step size
     double solarEnergyFixed = 0;
-    double financialReturn = 0;            // Power from solar module at MPP
+    double financialReturn = 0;             // Power from solar module at MPP
     double income = 0;
 /* Compute the power incident on the module during the time interval
 Start at midday and work forwards then backwards.
@@ -164,17 +166,18 @@ Needed to determine proportion of solar energy incident on the module. */
             double solarEnergyRatioFixed = solarEnergyFixed*100/solarStandard;
 /* Power generated at the Maximum Power Point (MPP) of the module in kW */
             double power = OptimalModulePower(solarEnergyRatioFixed)/1000;
-/* Integration of financial return */
+/* Integration of financial return. Costs per kWH over each hour. */
             if (power > usage) income = feedIn*(power - usage) + cost*usage;
             else income = cost*power;
             financialReturn += income/60;
             minute += minuteIncr;
         }
-    finished = (minuteIncr < 0);
-    minuteIncr = -1;
+        finished = (minuteIncr < 0);
+        minuteIncr = -1;
     }
     return financialReturn;
 }
+
 /*----------------------------------------------------------------------------*/
 /** @brief Computation of daily charge for a module that following sun's motion.
 
@@ -250,6 +253,7 @@ relative to a longitudinal axis at noon. */
     }
     return solarEnergyFollowingCharge/30;
 }
+
 /*----------------------------------------------------------------------------*/
 /** @brief Computation of daily charge for a fixed module.
 
@@ -349,6 +353,7 @@ Needed to determine proportion of solar energy incident on the module. */
     }
     return solarEnergyFixedCharge/60;
 }
+
 /*----------------------------------------------------------------------------*/
 /** @brief Integration of solar energy for following module.
 
@@ -393,6 +398,7 @@ double dailySolarEnergyFollowing(const double latitude,
     }
     return solarEnergy/30000;
 }
+
 /*----------------------------------------------------------------------------*/
 /** @brief Integration of solar energy for fixed module.
 
@@ -403,11 +409,12 @@ Integration is done by a simple sum over small elements given in minute
 increments and over half a day. The result is converted to kWH by dividing
 by 60,000 and multiplying by 2 for the second half of the day.
 Represents a fixed module facing the sun at noon.
-@param[in]:Latitude in degrees, positive north of equator
-       Declination of the sun in degrees
-       Angle of the module to the equatorial plane
-       Offset of the module  in degrees from the North to the East
-@results:Total energy per square metre over a day arriving at earth's surface.
+@param[in]: Latitude in degrees, positive north of equator
+@param[in]: Declination of the sun in degrees
+@param[in]: Angle of the module to the equatorial plane
+@param[in]: Offset of the module  in degrees from the North to the East
+@results:   Total energy per square metre over a day arriving at earth's surface.
+
 Dependencies: pathLoss(cosangle) integral of air density over a slant path. */
 
 double dailySolarEnergyFixed(const double latitude,

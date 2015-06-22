@@ -29,8 +29,9 @@ error checking is done.
  *   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.             *
  ***************************************************************************/
 
-#include <cmath>
 #include "sp-module-model.h"
+#include <cmath>
+#include <QDebug>
 
 static moduleModelParameters parms;
 
@@ -56,10 +57,10 @@ double moduleCurrent(const double solarEnergy, const double voltage)
     return current;
 }
 /*----------------------------------------------------------------------------*/
-/** @brief Model for solar module BP3125 with a maximum power point tracker.
+/** @brief Model for solar module with a maximum power point tracker.
 
 This uses a simple hill-climbing search for maximum power starting at the
-open-circuit voltage and stepping back to the peak.
+open-circuit voltage and stepping back to the peak power point.
 
 @param[in]: const double solarEnergy. The percentage of the standard incident
             solar radiation used to define the module characteristics
@@ -69,7 +70,7 @@ open-circuit voltage and stepping back to the peak.
 
 double OptimalModulePower(const double solarEnergy)
 {
-    if (solarEnergy == 0) return 0;
+    if (solarEnergy <= 0) return 0;
     double b = parms.Isc*solarEnergy*0.01/parms.I0+1;
     double Voc = parms.Vk*log(b);       // Open Circuit voltage
     double Vinc = Voc/10;               // Initial increment
@@ -95,9 +96,7 @@ double OptimalModulePower(const double solarEnergy)
     return power*parms.NM*parms.eff;
 }
 /*----------------------------------------------------------------------------*/
-/** @brief Model for solar module BP3125 with a maximum power point tracker.
-
-Sets the local parameters structure for use with the model.
+/** @brief Set the local parameters structure for use with the model.
 
 @param[in] const int NM                 // Number of Modules
 @param[in] const double Isc             // Short Circuit Current (A)
@@ -150,6 +149,7 @@ void deriveSimpleModel(const int NM, const double Isc, const double Voc,
     parms.Vk = (Vm - Voc)/(Ns*log(1-Im/Isc));
     parms.I0 = Isc*exp(-Voc/(Ns*parms.Vk));
     parms.eff = eff;
+    parms.Rs = 0;
     parms.Ns = Ns;
 }
 

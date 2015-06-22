@@ -29,12 +29,13 @@ A variety of routines producing high level results.
 
 //----------------------------------------------------------------------------
 
-double computeAnnualReturnFixedMPP(const double latitude,
+double computeAnnualFixedMPPReturn(const double latitude,
                         const double moduleAngle,
                         const double moduleOffset,
                         const double cost,
                         const double feedIn,
-                        const double usage);
+                        const double usage,
+                        const int dayYear);
 
 double computeDailyFixedMPPReturn(const double latitude,
                            const double declination,

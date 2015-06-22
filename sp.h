@@ -1,7 +1,5 @@
-// A range of model parameters.
-//
-// These will be integrated into a configuration file in due course.
-//
+/* Header for the main GUI code.
+*/
 /***************************************************************************
  *   Copyright (C) 2007 by Ken Sarkies                                     *
  *   ksarkies@trinity.asn.au                                               *
@@ -23,15 +21,29 @@
  *   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.             *
  ***************************************************************************/
 
-#ifndef MODEL_H_
-#define MODEL_H_
-#include "sp-module-model.h"
+#ifndef SP_H_
+#define SP_H_
 
-// Model and Site specific constants
-    const double maxDeclination = 23.45;        // Northern tropic
-    const double batteryVoltage = 12;
-// Cloud cover model
-    const double oktaFactor[12] = {0.61,0.62,0.58,0.52,0.43,0.40,0.42,0.45,0.45,0.48,0.50,0.53};
-    const int daysPerMonth[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+#include "ui_sp.h"
+#include <QDialog>
 
-#endif /*MODEL_H_*/
+//-----------------------------------------------------------------------------
+/** @brief Power Management Main Window.
+
+*/
+
+class SolarPowerGui : public QDialog
+{
+    Q_OBJECT
+public:
+    SolarPowerGui(QWidget* parent = 0);
+    ~SolarPowerGui();
+protected:
+private slots:
+    void on_goPushButton_clicked();
+private:
+// User Interface object instance
+    Ui::SolarPowerDialog SolarPowerUi;
+};
+
+#endif /*SP_H_*/

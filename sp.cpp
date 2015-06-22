@@ -140,6 +140,7 @@ void SolarPowerGui::on_goPushButton_clicked()
         if (SolarPowerUi.computationComboBox->currentIndex() == 1)
         {
 // Annual
+            bool useOkta = SolarPowerUi.oktaCheckBox->isChecked();
             SolarPowerUi.computationProgressBar->reset();
             SolarPowerUi.computationProgressBar->setMinimum(0);
             SolarPowerUi.computationProgressBar->setMaximum(365);
@@ -148,11 +149,11 @@ void SolarPowerGui::on_goPushButton_clicked()
             {
                 qApp->processEvents();
                 totalIncome += computeAnnualFixedMPPReturn(latitude,
-                    moduleAngle,moduleOffset,cost,feedIn,usage,dayYear);
+                    moduleAngle,moduleOffset,cost,feedIn,usage,dayYear,useOkta);
                 SolarPowerUi.computationProgressBar->setValue(dayYear);
             }
             SolarPowerUi.result->setText(QString("%1").arg(totalIncome,2));
-            SolarPowerUi.computationProgressBar->setValue(100);
+            SolarPowerUi.computationProgressBar->setValue(365);
         }
     }
 }

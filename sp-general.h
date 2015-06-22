@@ -27,6 +27,7 @@
 
 //----------------------------------------------------------------------------
 double dayLength(const double latitude, const double declination);
+int month(const int dayYear);
 double sunDeclination(const double dayYear);
 double getSolarStandard();
 

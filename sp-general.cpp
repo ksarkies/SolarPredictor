@@ -22,6 +22,7 @@
  ***************************************************************************/
 
 #include <cmath>
+#include "model.h"
 
 /*----------------------------------------------------------------------------*/
 /** @brief Length of day in hours for given latitude and solar declination
@@ -37,6 +38,24 @@ double dayLength(const double latitude, const double declination)
     double rLatitude = latitude*angleConversion;
     const double rDeclination = declination*angleConversion;
     return 2*acos(-tan(rLatitude)*tan(rDeclination))/(15*angleConversion);
+}
+/*----------------------------------------------------------------------------*/
+/** @brief Provide the month that the day falls in
+
+@param[in]: Day of year counting from 0 at January 1
+@results:   Month of year starting at 0 for January
+*/
+
+int month(const int dayYear)
+{
+    int month;
+    int monthEndDay = daysPerMonth[0];
+    for (month = 0; month < 12; month++)
+    {
+        if (dayYear < monthEndDay) break;
+        monthEndDay += daysPerMonth[month];
+    }
+    return month;
 }
 /*----------------------------------------------------------------------------*/
 /** @brief Declination of the Sun for a given day of Year

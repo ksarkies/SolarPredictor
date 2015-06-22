@@ -35,7 +35,8 @@ double computeAnnualFixedMPPReturn(const double latitude,
                         const double cost,
                         const double feedIn,
                         const double usage,
-                        const int dayYear);
+                        const int dayYear,
+                        const bool useOkta);
 
 double computeDailyFixedMPPReturn(const double latitude,
                            const double declination,
@@ -46,12 +47,14 @@ double computeDailyFixedMPPReturn(const double latitude,
                            const double usage);
 double solarFollowingCharge(const double latitude,
                             const double declination,
-                            const int model);
+                            const int model,
+                            const double modulePower);
 double solarFixedCharge(const double latitude,
                         const double declination,
                         const double moduleAngle,
                         const double moduleOffset,
-                        int model);
+                        int model,
+                        const double modulePower);
 double dailySolarEnergyFollowing(const double latitude,
                                  const double declination);
 double dailySolarEnergyFixed(const double latitude,

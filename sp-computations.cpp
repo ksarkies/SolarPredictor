@@ -63,14 +63,15 @@ double computeAnnualFixedMPPReturn(const double latitude,
                              const double cost,
                              const double feedIn,
                              const double usage,
-                             const int dayYear)
+                             const int dayYear,
+                             const bool useOkta)
 {
     double declination = sunDeclination(dayYear);
-    double dayIncome = //oktaFactor[month]*
-                       computeDailyFixedMPPReturn(latitude,
+    double dayIncome = computeDailyFixedMPPReturn(latitude,
                            declination,
                            moduleAngle, moduleOffset,
                            cost,feedIn,usage);
+    if (useOkta) dayIncome *= oktaFactor[month(dayYear)];
     return dayIncome;
 }
 
@@ -198,8 +199,9 @@ by 60 and multiplying by 2 for the second half of the day.
 Dependencies: pathLoss(cosangle) integral of air density over a slant path */
 
 double solarFollowingCharge(const double latitude,
-                                const double declination,
-                                const int model)
+                            const double declination,
+                            const int model,
+                            const double modulePower)
 {
     const double angleConversion = 3.1415927/180.0;
     const double rDeclination = declination*angleConversion;
@@ -274,7 +276,8 @@ double solarFixedCharge(const double latitude,
                         const double declination,
                         const double moduleAngle,
                         const double moduleOffset,
-                        int model)
+                        int model,
+                        const double modulePower)
 {
     const double angleConversion = 3.1415927/180.0;
     const double rDeclination = declination*angleConversion;
